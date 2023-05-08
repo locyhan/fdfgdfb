@@ -11,7 +11,7 @@ module.exports = {
 			process.env.WORDPRESS_API_URL.match(/(http(?:s)?:\/\/)(.*)/)[2], // Valid WP Image domain.
 			'0.gravatar.com',
 			'secure.gravatar.com',
-			'nextwp.local',
+			'onlinepaati.com',
 		],
 	},
 };
