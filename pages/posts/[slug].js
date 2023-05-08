@@ -61,24 +61,50 @@ export default function Post({ post, posts, preview }) {
   )
 }
 
-export async function getStaticProps({ params, preview = false, previewData }) {
-  const data = await getPostAndMorePosts(params.slug, preview, previewData)
+
+
+
+
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  params,
+  preview = false,
+  previewData,
+
+}) => {
+
+  const slug = params?.slug;
+ 
+  const host = req.headers.host;
+
+  const referringURL = req.headers?.referer || null;
+  const domain_url = process.env.WORDPRESS_API_URL as string;
+  const data = await getPostAndMorePosts(params?.slug, preview, previewData)
+
+
+	if (referringURL?.includes('facebook.com')) {
+		return {
+			redirect: {
+				permanent: false,
+				destination: `${
+					domain_url.replace(/(\/graphql)/, '/') + encodeURI(slug  as string)
+				}`,
+			},
+		};
+	}
+  
+
+ 
+  
 
   return {
     props: {
+      
+      slug,
+      host,
       preview,
       post: data.post,
       posts: data.posts,
-    },
-    revalidate: 10,
-  }
-}
-
-export async function getStaticPaths() {
-  const allPosts = await getAllPostsWithSlug()
-
-  return {
-    paths: allPosts.edges.map(({ node }) => `/posts/${node.slug}`) || [],
-    fallback: true,
+    }
   }
 }
